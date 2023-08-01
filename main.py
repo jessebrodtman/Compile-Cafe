@@ -148,3 +148,4 @@ def main():
     runApp()
 
 main()
+print('hello')
