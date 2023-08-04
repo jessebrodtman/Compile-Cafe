@@ -3,6 +3,8 @@ import math
 import copy
 from customers import *
 from tickets import *
+from orders import *
+from scenes import *
 
 # regular
 #TODO: orange
@@ -11,43 +13,8 @@ from tickets import *
 #* green
 
 #TODO: make customers appear gradually
-def getSceneName(sceneNumber):
-    if sceneNumber == 0:
-        return 'lobby'
-    elif sceneNumber == 1:
-        return 'coding'
-    elif sceneNumber == 2:
-        return 'compiling'
-    elif sceneNumber == 3:
-        return 'naming'
-    elif sceneNumber == 4:
-        return 'evaluating'
-
-def drawScene(app, sceneNumber):
-    if sceneNumber == 0:
-        #draw lobby
-        drawRect(0,0,app.width,app.height,fill='lightGray')
-    elif sceneNumber == 1:
-        #draw coding
-        drawRect(0,0,app.width,app.height,fill='lightBlue')
-    elif sceneNumber == 2:
-        #draw compiling
-        drawRect(0,0,app.width,app.height,fill='lightGreen')
-    elif sceneNumber == 3:
-        #draw naming
-        drawRect(0,0,app.width,app.height,fill='lightCoral')
-    elif sceneNumber == 4:
-        #draw evaluating
-        drawRect(0,0,app.width,app.height,fill='pink')
-    drawLabel(f'Active Scene: {app.sceneName}', app.width/2, app.height-150, bold=True, border='white', borderWidth=1, size=25)
-
-def drawSceneButtons(app):
-    #TODO: make buttons pretty
-    drawRect(0,app.height-100,app.width,100,fill='lightSlateGray')
-    for i in range(5):
-        drawRect(62.5+i*100,app.height-75,75,50,fill='dodgerBlue')
-        drawLabel(getSceneName(i),100+i*100,app.height-50,bold=True)
-
+#TODO: make orders work: draw at start, send from one station to next, trash anytime
+#TODO: give order to ticket and score
 def checkSceneSwitch(app, mouseX, mouseY):
     #check if in right vertical space
     if app.height-75<=mouseY<=app.height-25:
@@ -59,10 +26,19 @@ def checkSceneSwitch(app, mouseX, mouseY):
                 return
 
 def onAppStart(app):
-    #TODO: figure out width and height
+    #TODO: figure out adaptive width and height
     app.width = 600
     app.height = 600
     app.dayNumber = 1
+    app.availableCodeItems = []
+    app.availableCompileLevels = []
+    app.availableNameItems = []
+    
+    #TODO: make more names, sizes, and styles
+    app.fileNames = ['Henry', 'Billy', 'Joe']
+    app.fileSizes = ['big file', 'medium file', 'small file']
+    app.fileStyles = ['Light Mode', 'Dark Mode', 'Hotdog']
+    
     startNewDay(app, app.dayNumber)
 
 def startNewDay(app, dayNumber):
@@ -72,8 +48,19 @@ def startNewDay(app, dayNumber):
     app.nameList = ['Ray', 'Liv', 'Avi', 'Amalia', 'Anna', 'Emily', 'Gleb', 'Hanson', 'Maerah', 'Peter', 'Rubie', 'Rong', 'Samuel', 'Sheng', 'Sonya', 'Teadora', 'Theo']
     
     #TODO: make different options available by day
-    app.availableItems = ['if statement', 'booleans', 'for loop', 'while loop', 'list', 'set', 'dictionary']
-    
+    if dayNumber == 1:
+        app.availableCodeItems = ['If', 'Else', 'Elif', 'List']
+        app.availableCompileLevels = [2, 3]
+        app.availableNameItems = ['Name']
+    elif dayNumber == 2:
+        app.availableCodeItems.extend(['Set','For Loop'])
+        app.availableCompileLevels.extend([4])
+        app.availableNameItems.extend(['File Size'])
+    elif dayNumber == 3:
+        app.availableCodeItems.extend(['Dict', 'While Loop'])
+        app.availableCompileLevels.extend([1, 5])
+        app.availableNameItems.extend(['Style'])
+        
     app.customerList = createCustomers(app)
     app.activeTicket = None
 
@@ -85,18 +72,42 @@ def makeRandomCustomer(app):
 
 def makeRandomTicket(app):
     if app.dayNumber<=3:
-        numberItems = 3
+        numberCodeItems = 2
+        numberNameItems = 1
     elif app.dayNumber<=5:
-        numberItems = 4
+        numberCodeItems = 3
+        numberNameItems = 2
     else:
-        numberItems = 5
+        numberCodeItems = 4
+        numberNameItems = 3
+
+    codeList = copy.copy(app.availableCodeItems)
     
-    ingredientList = copy.copy(app.availableItems)
-    for i in range(len(ingredientList)-numberItems):
-        randomIndex = randrange(0, len(ingredientList))
-        ingredientList.pop(randomIndex)
+    #remove random elements until we have the right number of items
+    for i in range(len(codeList)-numberCodeItems):
+        randomIndex = randrange(0, len(codeList))
+        codeList.pop(randomIndex)
     
-    ticket = Ticket(ingredientList)
+    nameList = copy.copy(app.availableNameItems)
+    for i in range(len(nameList)-numberNameItems):
+        randomIndex = randrange(0, len(nameList))
+        nameList.pop(randomIndex)
+    #make the names a dict
+    nameDict = dict()
+    for option in nameList:
+        if option == 'Name':
+            index = randrange(0, len(app.fileNames))
+            nameDict['Name'] = app.fileNames[index]
+        elif option == 'File Size':
+            index = randrange(0, len(app.fileSizes))
+            nameDict['File Size'] = app.fileSizes[index]
+        elif option == 'Style':
+            index = randrange(0, len(app.fileStyles))
+            nameDict['Style'] = app.fileStyles[index]
+    
+    compileLevel = app.availableCompileLevels[randrange(0,len(app.availableCompileLevels))]
+        
+    ticket = Ticket(codeList, compileLevel, nameDict)
     return ticket
 
 def getRandomName(app):
@@ -148,4 +159,3 @@ def main():
     runApp()
 
 main()
-print('hello')
