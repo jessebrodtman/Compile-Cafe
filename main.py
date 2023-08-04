@@ -13,7 +13,6 @@ from scenes import *
 #* green
 
 #TODO: make customers appear gradually
-#TODO: make orders work: draw at start, send from one station to next, trash anytime
 #TODO: give order to ticket and score
 def checkSceneSwitch(app, mouseX, mouseY):
     #check if in right vertical space
@@ -29,7 +28,7 @@ def onAppStart(app):
     #TODO: figure out adaptive width and height
     app.width = 600
     app.height = 600
-    app.dayNumber = 1
+    app.dayNumber = 3
     app.availableCodeItems = []
     app.availableCompileLevels = []
     app.availableNameItems = []
@@ -44,6 +43,12 @@ def onAppStart(app):
     
     startNewDay(app, app.dayNumber)
 
+def onStep(app):
+    if app.width != 600:
+        app.width = 600
+    if app.height != 600:
+        app.height = 600
+    
 def startNewDay(app, dayNumber):
     app.sceneNumber = 0
     app.sceneName = getSceneName(app.sceneNumber)
@@ -53,17 +58,17 @@ def startNewDay(app, dayNumber):
     
     #TODO: make different options available by day
     if dayNumber == 1:
-        app.availableCodeItems = ['If', 'Else', 'Elif', 'List']
+        app.availableCodeItems = ['If', 'Elif', 'Else', 'List']
         app.availableCompileLevels = [2, 3]
         app.availableNameItems = ['Name']
     elif dayNumber == 2:
-        app.availableCodeItems.extend(['Set','For Loop'])
-        app.availableCompileLevels.extend([4])
-        app.availableNameItems.extend(['File Size'])
-    elif dayNumber == 3:
-        app.availableCodeItems.extend(['Dict', 'While Loop'])
-        app.availableCompileLevels.extend([1, 5])
-        app.availableNameItems.extend(['Style'])
+        app.availableCodeItems = ['If', 'Elif', 'Else', 'List', 'For Loop','While Loop']
+        app.availableCompileLevels = [2, 3, 4]
+        app.availableNameItems = ['Name', 'File Size']
+    elif dayNumber >= 3:
+        app.availableCodeItems = ['If', 'Elif', 'Else', 'List', 'For Loop','While Loop', 'Set', 'Dict']
+        app.availableCompileLevels = [1, 2, 3, 4, 5]
+        app.availableNameItems = ['Name', 'File Size', 'Style']
         
     app.customerList = createCustomers(app)
     app.activeTicket = None
@@ -166,32 +171,44 @@ def onMousePress(app, mouseX, mouseY):
         #pressed new order button
         if(25<=mouseX<=85 and 130<=mouseY<=190):
             app.activeOrders[1].append(Order())
-        #pressed trash order button
-        elif(25<=mouseX<=85 and 210<=mouseY<=270):
-            if len(app.activeOrders[1])>0:
+        if len(app.activeOrders[1])>0:
+            #pressed trash order button
+            if(25<=mouseX<=85 and 210<=mouseY<=270):
                 app.activeOrders[1].pop(0)
-        #pressed move order button
-        elif(25<=mouseX<=85 and 290<=mouseY<=350):
-            if len(app.activeOrders[1])>0:
+            #pressed move order button
+            elif(25<=mouseX<=85 and 290<=mouseY<=350):
                 app.activeOrders[2].append(app.activeOrders[1].pop(0))
+            #check first column of buttons
+            elif(420<=mouseX<=480):
+                for i in range(4):
+                    if (220+50*i<=mouseY<=260+50*i):
+                        currItem = app.availableCodeItems[i]
+                        app.activeOrders[1][0].addCodeItem(currItem)
+            #check second column of buttons
+            elif(500<=mouseX<=560):
+                numAvailableCodeItems = len(app.availableCodeItems)
+                for i in range(4,numAvailableCodeItems):
+                    if (220+50*(i-4)<=mouseY<=260+50*(i-4)):
+                        currItem = app.availableCodeItems[i]
+                        app.activeOrders[1][0].addCodeItem(currItem)
+                    
     elif app.sceneNumber == 2:
-        #pressed trash order button
-        if(25<=mouseX<=85 and 210<=mouseY<=270):
-            if len(app.activeOrders[2])>0:
+        if len(app.activeOrders[2])>0:
+            #pressed trash order button
+            if(25<=mouseX<=85 and 210<=mouseY<=270):
                 app.activeOrders[2].pop(0)
-        #pressed move order button
-        elif(25<=mouseX<=85 and 290<=mouseY<=350):
-            if len(app.activeOrders[2])>0:
+            #pressed move order button
+            elif(25<=mouseX<=85 and 290<=mouseY<=350):
                 app.activeOrders[3].append(app.activeOrders[2].pop(0))
     elif app.sceneNumber == 3:
-        #pressed trash order button
-        if(25<=mouseX<=85 and 210<=mouseY<=270):
-            if len(app.activeOrders[3])>0:
-                app.activeOrders[3].pop(0)
-        #pressed move order button
-        elif(25<=mouseX<=85 and 290<=mouseY<=350):
-            pass
-            #TODO: make function to evaluate order
+        if len(app.activeOrders[3])>0:
+            #pressed trash order button
+            if(25<=mouseX<=85 and 210<=mouseY<=270):
+                    app.activeOrders[3].pop(0)
+            #pressed move order button
+            elif(25<=mouseX<=85 and 290<=mouseY<=350):
+                pass
+                #TODO: make function to evaluate order
     elif app.sceneNumber == 4:
         pass
 

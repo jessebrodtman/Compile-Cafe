@@ -1,5 +1,6 @@
 from cmu_graphics import *
 
+#TODO: track time
 class Order:
     def __init__(self):
         self.codeItems = []
@@ -9,7 +10,7 @@ class Order:
     def drawOrder(self):
         #TODO: make pretty
         x = app.width//2 - 120
-        y = app.height//2 - 120
+        y = app.height//2 - 150
         width = 190
         height = 230
         drawRect(x, y, width, height, fill='white')
