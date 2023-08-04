@@ -36,6 +36,7 @@ def drawScene(app, sceneNumber):
     
     #? draw label until scenes are done
     drawLabel(f'Active Scene: {app.sceneName}', app.width/2, app.height-150, bold=True, border='white', borderWidth=1, size=25)
+    drawLabel(f'Current Day: {app.dayNumber}', app.width/2, app.height-125, bold=True, border='white', borderWidth=1, size=25)
     
 def drawLobby(app):
     drawRect(0,0,app.width,app.height,fill='lightGray')
@@ -98,13 +99,23 @@ def drawNaming(app):
     drawRect(0,0,app.width,app.height,fill='lightCoral')
     
     #draw buttons
+    #trash order
     drawRect(25,210,60,60,fill='white')
     drawLabel('Press to trash', 55, 225, size=9)
     drawLabel('current order!', 55, 240, size=9)
-    
+    #move order
     drawRect(25,290,60,60,fill='white')
     drawLabel('Press to move', 55, 305, size=9)
     drawLabel('current order!', 55, 320, size=9)
+    #rename
+    drawRect(420,220,140,50,fill='white')
+    drawLabel('Rename Order',490,245,size=17)
+    #change size
+    drawRect(420,290,140,50,fill='white')
+    drawLabel('Change File Size',490,315,size=17)
+    #change style
+    drawRect(420,360,140,50,fill='white')
+    drawLabel('Rename Style',490,385,size=17)
     
     #display active order
     if app.activeOrders[3] != []:

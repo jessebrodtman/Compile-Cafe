@@ -205,6 +205,7 @@ def onMousePress(app, mouseX, mouseY):
                 app.activeOrders[2][0].updateCompileLevel()
                 app.activeOrders[3].append(app.activeOrders[2].pop(0))
     elif app.sceneNumber == 3:
+        #TODO: make buttons work for style
         if len(app.activeOrders[3])>0:
             #pressed trash order button
             if(25<=mouseX<=85 and 210<=mouseY<=270):
