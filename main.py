@@ -39,6 +39,9 @@ def onAppStart(app):
     app.fileSizes = ['big file', 'medium file', 'small file']
     app.fileStyles = ['Light Mode', 'Dark Mode', 'Hotdog']
     
+    #TODO: figure out scoring system and display
+    app.score = 0
+    
     startNewDay(app, app.dayNumber)
 
 def startNewDay(app, dayNumber):
@@ -46,6 +49,7 @@ def startNewDay(app, dayNumber):
     app.sceneName = getSceneName(app.sceneNumber)
     
     app.nameList = ['Ray', 'Liv', 'Avi', 'Amalia', 'Anna', 'Emily', 'Gleb', 'Hanson', 'Maerah', 'Peter', 'Rubie', 'Rong', 'Samuel', 'Sheng', 'Sonya', 'Teadora', 'Theo']
+    app.activeOrders = {1: [], 2: [], 3: [], 4: []}
     
     #TODO: make different options available by day
     if dayNumber == 1:
@@ -154,6 +158,42 @@ def onKeyPress(app, key):
 def onMousePress(app, mouseX, mouseY):
     #check if switching scenes
     checkSceneSwitch(app, mouseX, mouseY)
+    
+    #check buttons based on active scene
+    if app.sceneNumber == 0:
+        pass
+    elif app.sceneNumber == 1:
+        #pressed new order button
+        if(25<=mouseX<=85 and 130<=mouseY<=190):
+            app.activeOrders[1].append(Order())
+        #pressed trash order button
+        elif(25<=mouseX<=85 and 210<=mouseY<=270):
+            if len(app.activeOrders[1])>0:
+                app.activeOrders[1].pop(0)
+        #pressed move order button
+        elif(25<=mouseX<=85 and 290<=mouseY<=350):
+            if len(app.activeOrders[1])>0:
+                app.activeOrders[2].append(app.activeOrders[1].pop(0))
+    elif app.sceneNumber == 2:
+        #pressed trash order button
+        if(25<=mouseX<=85 and 210<=mouseY<=270):
+            if len(app.activeOrders[2])>0:
+                app.activeOrders[2].pop(0)
+        #pressed move order button
+        elif(25<=mouseX<=85 and 290<=mouseY<=350):
+            if len(app.activeOrders[2])>0:
+                app.activeOrders[3].append(app.activeOrders[2].pop(0))
+    elif app.sceneNumber == 3:
+        #pressed trash order button
+        if(25<=mouseX<=85 and 210<=mouseY<=270):
+            if len(app.activeOrders[3])>0:
+                app.activeOrders[3].pop(0)
+        #pressed move order button
+        elif(25<=mouseX<=85 and 290<=mouseY<=350):
+            pass
+            #TODO: make function to evaluate order
+    elif app.sceneNumber == 4:
+        pass
 
 def main():
     runApp()

@@ -1,5 +1,9 @@
 from cmu_graphics import *
+from orders import *
+
 #! draw scenes 
+#TODO: make backgrounds for each scene
+#TODO: make buttons pretty for each scene
 
 def getSceneName(sceneNumber):
     if sceneNumber == 0:
@@ -38,12 +42,57 @@ def drawLobby(app):
 
 def drawCoding(app):
     drawRect(0,0,app.width,app.height,fill='lightBlue')
+    #make buttons
+    drawRect(25,130,60,60,fill='white')
+    drawLabel('Press to make', 55, 145, size=9)
+    drawLabel('new order!', 55, 160, size=9)
+    
+    drawRect(25,210,60,60,fill='white')
+    drawLabel('Press to trash', 55, 225, size=9)
+    drawLabel('current order!', 55, 240, size=9)
+    
+    drawRect(25,290,60,60,fill='white')
+    drawLabel('Press to move', 55, 305, size=9)
+    drawLabel('current order!', 55, 320, size=9)
+    
+    #display active order
+    if app.activeOrders[1] != []:
+        activeOrder = app.activeOrders[1][0]
+        activeOrder.drawOrder()
 
 def drawCompiling(app):
     drawRect(0,0,app.width,app.height,fill='lightGreen')
+    
+    #draw buttons
+    drawRect(25,210,60,60,fill='white')
+    drawLabel('Press to trash', 55, 225, size=9)
+    drawLabel('current order!', 55, 240, size=9)
+    
+    drawRect(25,290,60,60,fill='white')
+    drawLabel('Press to move', 55, 305, size=9)
+    drawLabel('current order!', 55, 320, size=9)
+    
+    #display active order
+    if app.activeOrders[2] != []:
+        activeOrder = app.activeOrders[2][0]
+        activeOrder.drawOrder()
 
 def drawNaming(app):
     drawRect(0,0,app.width,app.height,fill='lightCoral')
+    
+    #draw buttons
+    drawRect(25,210,60,60,fill='white')
+    drawLabel('Press to trash', 55, 225, size=9)
+    drawLabel('current order!', 55, 240, size=9)
+    
+    drawRect(25,290,60,60,fill='white')
+    drawLabel('Press to move', 55, 305, size=9)
+    drawLabel('current order!', 55, 320, size=9)
+    
+    #display active order
+    if app.activeOrders[3] != []:
+        activeOrder = app.activeOrders[3][0]
+        activeOrder.drawOrder()
 
 def drawEval(app):
     drawRect(0,0,app.width,app.height,fill='pink')
