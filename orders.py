@@ -1,4 +1,5 @@
 from cmu_graphics import *
+import time
 
 #TODO: track time
 class Order:
@@ -6,7 +7,16 @@ class Order:
         self.codeItems = []
         self.compileLevel = 0
         self.nameItems = dict()
+        self.startTime = 0
+    
+    def startTimer(self):
+        self.startTime = time.time()
         
+    def updateCompileLevel(self):
+        #TODO: draw progress bar?
+        timeElapsed = time.time()-self.startTime
+        self.compileLevel = int(timeElapsed//10)
+    
     def drawOrder(self):
         #TODO: make pretty
         x = app.width//2 - 120
@@ -38,6 +48,8 @@ class Order:
         for item in self.codeItems:
             s += '\n'+item
 
+        s += f'\nCompile Level: {self.compileLevel}'
+        
         for key in self.nameItems:
             s += f'\n{key}: {self.nameItems[key]}'
         return s

@@ -5,6 +5,7 @@ from customers import *
 from tickets import *
 from orders import *
 from scenes import *
+import time
 
 # regular
 #TODO: orange
@@ -49,6 +50,9 @@ def onStep(app):
     if app.height != 600:
         app.height = 600
     
+    for order in app.activeOrders[2]:
+        order.updateCompileLevel()
+    
 def startNewDay(app, dayNumber):
     app.sceneNumber = 0
     app.sceneName = getSceneName(app.sceneNumber)
@@ -56,7 +60,6 @@ def startNewDay(app, dayNumber):
     app.nameList = ['Ray', 'Liv', 'Avi', 'Amalia', 'Anna', 'Emily', 'Gleb', 'Hanson', 'Maerah', 'Peter', 'Rubie', 'Rong', 'Samuel', 'Sheng', 'Sonya', 'Teadora', 'Theo']
     app.activeOrders = {1: [], 2: [], 3: [], 4: []}
     
-    #TODO: make different options available by day
     if dayNumber == 1:
         app.availableCodeItems = ['If', 'Elif', 'Else', 'List']
         app.availableCompileLevels = [2, 3]
@@ -177,6 +180,7 @@ def onMousePress(app, mouseX, mouseY):
                 app.activeOrders[1].pop(0)
             #pressed move order button
             elif(25<=mouseX<=85 and 290<=mouseY<=350):
+                app.activeOrders[1][0].startTimer()
                 app.activeOrders[2].append(app.activeOrders[1].pop(0))
             #check first column of buttons
             elif(420<=mouseX<=480):
@@ -190,8 +194,7 @@ def onMousePress(app, mouseX, mouseY):
                 for i in range(4,numAvailableCodeItems):
                     if (220+50*(i-4)<=mouseY<=260+50*(i-4)):
                         currItem = app.availableCodeItems[i]
-                        app.activeOrders[1][0].addCodeItem(currItem)
-                    
+                        app.activeOrders[1][0].addCodeItem(currItem)       
     elif app.sceneNumber == 2:
         if len(app.activeOrders[2])>0:
             #pressed trash order button
@@ -199,6 +202,7 @@ def onMousePress(app, mouseX, mouseY):
                 app.activeOrders[2].pop(0)
             #pressed move order button
             elif(25<=mouseX<=85 and 290<=mouseY<=350):
+                app.activeOrders[2][0].updateCompileLevel()
                 app.activeOrders[3].append(app.activeOrders[2].pop(0))
     elif app.sceneNumber == 3:
         if len(app.activeOrders[3])>0:
