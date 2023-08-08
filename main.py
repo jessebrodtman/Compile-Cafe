@@ -34,6 +34,7 @@ def onAppStart(app):
     app.availableCodeItems = []
     app.availableCompileLevels = []
     app.availableNameItems = []
+    app.gameOver = False
     
     #TODO: make more names, sizes, and styles
     app.fileNames = ['Henry', 'Billy', 'Joe']
@@ -55,6 +56,8 @@ def onStep(app):
         order.updateCompileLevel()
     
 def startNewDay(app, dayNumber):
+    app.dayNumber = dayNumber
+    Ticket.ticketId = 0
     app.sceneNumber = 0
     app.sceneName = getSceneName(app.sceneNumber)
     
@@ -84,10 +87,10 @@ def makeRandomCustomer(app):
     return customer
 
 def makeRandomTicket(app):
-    if app.dayNumber<=3:
+    if app.dayNumber<3:
         numberCodeItems = 2
         numberNameItems = 1
-    elif app.dayNumber<=5:
+    elif app.dayNumber<5:
         numberCodeItems = 3
         numberNameItems = 2
     else:
@@ -130,15 +133,11 @@ def getRandomName(app):
 
 def createCustomers(app):
     customers = []
-    if app.dayNumber <=5:
-        numberCustomers = 5
-    else:
-        numberCustomers = 5 + math.ceil((dayNumber-5)/2)
+    numberCustomers = min(app.dayNumber+1,5)
     
     for i in range(numberCustomers):
         newCustomer = makeRandomCustomer(app)
         customers.append(newCustomer)
-    
     return customers
 
 def redrawAll(app):
@@ -160,71 +159,95 @@ def redrawAll(app):
         else:
             ticket.drawTicket(25+80*i, 25, 60, 90)
     
+    if app.gameOver:
+        drawRect(150,200,300,200,fill='white',border='black')
+        drawLabel('Game Over!',300,270,size=20,bold=True)
+        drawLabel('You Scored Below A 70 :(',300,300,size=20,bold=True)
+        drawLabel("Press 'R' To Restart!",300,330,size=20,bold=True)
+        
+    #TODO: draw score
+    
 def onKeyPress(app, key):
     if key.isnumeric():
         app.activeTicket = int(key)-1
+    
+    if app.gameOver and key == 'r':
+        app.gameOver = False
+        startNewDay(app,1)
 
 def onMousePress(app, mouseX, mouseY):
     #check if switching scenes
     checkSceneSwitch(app, mouseX, mouseY)
     
     #check buttons based on active scene
-    if app.sceneNumber == 0:
-        pass
-    elif app.sceneNumber == 1:
-        #pressed new order button
-        if(25<=mouseX<=85 and 130<=mouseY<=190):
-            app.activeOrders[1].append(Order())
-        if len(app.activeOrders[1])>0:
-            #pressed trash order button
-            if(25<=mouseX<=85 and 210<=mouseY<=270):
-                app.activeOrders[1].pop(0)
-            #pressed move order button
-            elif(25<=mouseX<=85 and 290<=mouseY<=350):
-                app.activeOrders[1][0].startTimer()
-                app.activeOrders[2].append(app.activeOrders[1].pop(0))
-            #check first column of buttons
-            elif(420<=mouseX<=480):
-                for i in range(4):
-                    if (220+50*i<=mouseY<=260+50*i):
-                        currItem = app.availableCodeItems[i]
-                        app.activeOrders[1][0].addCodeItem(currItem)
-            #check second column of buttons
-            elif(500<=mouseX<=560):
-                numAvailableCodeItems = len(app.availableCodeItems)
-                for i in range(4,numAvailableCodeItems):
-                    if (220+50*(i-4)<=mouseY<=260+50*(i-4)):
-                        currItem = app.availableCodeItems[i]
-                        app.activeOrders[1][0].addCodeItem(currItem)       
-    elif app.sceneNumber == 2:
-        if len(app.activeOrders[2])>0:
-            #pressed trash order button
-            if(25<=mouseX<=85 and 210<=mouseY<=270):
-                app.activeOrders[2].pop(0)
-            #pressed move order button
-            elif(25<=mouseX<=85 and 290<=mouseY<=350):
-                app.activeOrders[2][0].updateCompileLevel()
-                app.activeOrders[3].append(app.activeOrders[2].pop(0))
-    elif app.sceneNumber == 3:
-        if len(app.activeOrders[3])>0:
-            #pressed trash order button
-            if(25<=mouseX<=85 and 210<=mouseY<=270):
-                    app.activeOrders[3].pop(0)
-            #pressed move order button
-            elif(25<=mouseX<=85 and 290<=mouseY<=350):
-                #TODO: make function to evaluate order
-                for i in range(len(app.customerList)):
-                    customer = app.customerList[i]
-                    if customer.getTicketNum() == app.activeTicket:
-                        customer.evaluateTicket(app.activeOrders[3][0])
-                        app.activeOrders[4] = (customer, app.activeOrders[3].pop(0))
-                        app.sceneNumber = 4
-            elif(420<=mouseX<=560):
-                for i in range(0,len(app.availableNameItems)):
-                    if (220+70*i<=mouseY<=270+70*i):
-                        app.activeOrders[3][0].updateNameItems(i)
-    elif app.sceneNumber == 4:
-        pass
+    if not app.gameOver:
+        if app.sceneNumber == 0:
+            pass
+        elif app.sceneNumber == 1:
+            #pressed new order button
+            if(25<=mouseX<=85 and 130<=mouseY<=190):
+                app.activeOrders[1].append(Order())
+            if len(app.activeOrders[1])>0:
+                #pressed trash order button
+                if(25<=mouseX<=85 and 210<=mouseY<=270):
+                    app.activeOrders[1].pop(0)
+                #pressed move order button
+                elif(25<=mouseX<=85 and 290<=mouseY<=350):
+                    app.activeOrders[1][0].startTimer()
+                    app.activeOrders[2].append(app.activeOrders[1].pop(0))
+                #check first column of buttons
+                elif(420<=mouseX<=480):
+                    for i in range(4):
+                        if (220+50*i<=mouseY<=260+50*i):
+                            currItem = app.availableCodeItems[i]
+                            app.activeOrders[1][0].addCodeItem(currItem)
+                #check second column of buttons
+                elif(500<=mouseX<=560):
+                    numAvailableCodeItems = len(app.availableCodeItems)
+                    for i in range(4,numAvailableCodeItems):
+                        if (220+50*(i-4)<=mouseY<=260+50*(i-4)):
+                            currItem = app.availableCodeItems[i]
+                            app.activeOrders[1][0].addCodeItem(currItem)       
+        elif app.sceneNumber == 2:
+            if len(app.activeOrders[2])>0:
+                #pressed trash order button
+                if(25<=mouseX<=85 and 210<=mouseY<=270):
+                    app.activeOrders[2].pop(0)
+                #pressed move order button
+                elif(25<=mouseX<=85 and 290<=mouseY<=350):
+                    app.activeOrders[2][0].updateCompileLevel()
+                    app.activeOrders[3].append(app.activeOrders[2].pop(0))
+        elif app.sceneNumber == 3:
+            if len(app.activeOrders[3])>0:
+                #pressed trash order button
+                if(25<=mouseX<=85 and 210<=mouseY<=270):
+                        app.activeOrders[3].pop(0)
+                #pressed move order button
+                elif(25<=mouseX<=85 and 290<=mouseY<=350):
+                    #TODO: make function to evaluate order
+                    for i in range(len(app.customerList)):
+                        customer = app.customerList[i]
+                        if customer.getTicketNum() == app.activeTicket:
+                            end = customer.evaluateTicket(app.activeOrders[3][0])
+                            if end:
+                                endGame(app)
+                            
+                            app.activeOrders[4] = (customer, app.activeOrders[3].pop(0))
+                            app.sceneNumber = 4
+                            app.customerList.pop(i)
+                            if len(app.customerList)==0:
+                                endDay(app)
+                            break
+                elif(420<=mouseX<=560):
+                    for i in range(0,len(app.availableNameItems)):
+                        if (220+70*i<=mouseY<=270+70*i):
+                            app.activeOrders[3][0].updateNameItems(i)
+
+def endGame(app):
+    app.gameOver = True
+
+def endDay(app):
+    print('new day')
 
 def main():
     runApp()

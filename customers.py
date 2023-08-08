@@ -60,6 +60,12 @@ class Customer:
         
         overallScore = (lobbyScore+codingScore+compilingScore+namingScore)//4
         self.scores = [lobbyScore, codingScore, compilingScore, namingScore, overallScore]
+        
+        app.score += overallScore
+        
+        if overallScore<70:
+            return True
+        return False
     
 def differenceInItems(A, B):
     #return list of items in A but not in B

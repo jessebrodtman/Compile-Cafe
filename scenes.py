@@ -122,6 +122,7 @@ def drawNaming(app):
         activeOrder.drawOrder()
 
 def drawEval(app):
+    #TODO: draw customer and picture
     drawRect(0,0,app.width,app.height,fill='pink')
     if app.activeOrders[4] != None:
         customer, order = app.activeOrders[4]
