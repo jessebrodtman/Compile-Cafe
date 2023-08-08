@@ -36,9 +36,6 @@ class Order:
     def increaseCompileLevel(self):
         self.compileLevel += 1
     
-    # def setNameItems(self, category, value):
-        # self.nameItems[category] = value
-    
     def updateNameItems(self, num):
         if num == 0:
             #update name

@@ -2,12 +2,18 @@ from cmu_graphics import *
 import time
 from tickets import *
 from orders import *
+from PIL import Image
 
 class Customer:
     def __init__(self, name, ticket):
         self.name = name
         self.ticket = ticket
         self.served = False
+    
+    def drawPicture(self, x, y, size):
+        picture = Image.open(f'C:\\Users\\jesse\\Desktop\\15-112\\Images\\{self.name}.jpeg')
+        picture = CMUImage(picture)
+        drawImage(picture,x,y,width=size,height=size)
     
     def getTicketNum(self):
         return self.ticket.id

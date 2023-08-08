@@ -40,6 +40,11 @@ def drawScene(app, sceneNumber):
     
 def drawLobby(app):
     drawRect(0,0,app.width,app.height,fill='lightGray')
+    
+    for i in range(len(app.customerList)):
+        customer = app.customerList[i]
+        customer.drawPicture(50+100*i,225,85)
+        drawLabel(customer.name,92.5+100*i,323,size=15,bold=True)
 
 def drawCoding(app):
     drawRect(0,0,app.width,app.height,fill='lightBlue')
@@ -127,6 +132,8 @@ def drawEval(app):
     if app.activeOrders[4] != None:
         customer, order = app.activeOrders[4]
         order.drawOrder()
+        customer.drawPicture(400,225,150)
+        drawLabel(f'{customer.name} has been served!',450,400,size=20,bold=True)
         
         scoreNames = ['Time Score:', 'Coding Score:', 'Compiling Score:', 'Naming Score:', 'Total Score:']
         for i in range(5):
