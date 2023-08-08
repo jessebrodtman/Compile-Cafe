@@ -15,7 +15,7 @@ import time
 
 #TODO: make customers appear gradually
 #TODO: give order to ticket and score
-#TODO: make day 1 explanation game
+#TODO: add instructions for day 0
 def checkSceneSwitch(app, mouseX, mouseY):
     #check if in right vertical space
     if app.height-75<=mouseY<=app.height-25:
@@ -30,11 +30,12 @@ def onAppStart(app):
     #TODO: figure out adaptive width and height
     app.width = 600
     app.height = 600
-    app.dayNumber = 3
+    app.dayNumber = 0
     app.availableCodeItems = []
     app.availableCompileLevels = []
     app.availableNameItems = []
     app.gameOver = False
+    app.dayOver = False
     
     #TODO: make more names, sizes, and styles
     app.fileNames = ['Henry', 'Billy', 'Joe']
@@ -44,7 +45,24 @@ def onAppStart(app):
     #TODO: figure out scoring system and display
     app.score = 0
     
-    startNewDay(app, app.dayNumber)
+    runTutorial(app)
+
+def runTutorial(app):
+    app.sceneNumber = 0
+    app.nameList = ['Ray', 'Liv', 'Avi', 'Amalia', 'Anna', 'James', 'Emily', 'Gleb', 'Hanson', 'Jieun', 'Maerah', 'Peter', 'Rubie', 'Riley', 'Rong', 'Samuel', 'Sheng', 'Mia', 'Sonya', 'Teadora', 'Theo']
+    app.activeOrders = {1: [], 2: [], 3: [], 4: None}
+    app.availableCodeItems = ['If', 'Elif', 'Else', 'List']
+    app.availableCompileLevels = [2, 3]
+    app.availableNameItems = ['Name']
+    
+    nameA = 'Ray'
+    ticketA = Ticket(['If','Elif'], 2, {'Name': 'Henry'})
+    customerA = Customer(nameA, ticketA)
+    nameB = 'James'
+    ticketB = Ticket(['Else', 'List'], 3, {'Name': 'Joe'})
+    customerB = Customer(nameB, ticketB)
+    app.customerList = [customerA, customerB]
+    app.activeTicket = None
 
 def onStep(app):
     if app.width != 600:
@@ -164,6 +182,12 @@ def redrawAll(app):
         drawLabel('Game Over!',300,270,size=20,bold=True)
         drawLabel('You Scored Below A 70 :(',300,300,size=20,bold=True)
         drawLabel("Press 'R' To Restart!",300,330,size=20,bold=True)
+    
+    if app.dayOver:
+        drawRect(150,200,300,200,fill='white',border='black')
+        drawLabel('Day Over!',300,270,size=20,bold=True)
+        drawLabel(f'You Passed Day #{app.dayNumber}!',300,300,size=20,bold=True)
+        drawLabel("Press 'N' To Continue!",300,330,size=20,bold=True)
         
     #TODO: draw score
     
@@ -174,6 +198,10 @@ def onKeyPress(app, key):
     if app.gameOver and key == 'r':
         app.gameOver = False
         startNewDay(app,1)
+    
+    if app.dayOver and key == 'n':
+        app.dayOver = False
+        startNewDay(app, app.dayNumber+1)
 
 def onMousePress(app, mouseX, mouseY):
     #check if switching scenes
@@ -247,7 +275,8 @@ def endGame(app):
     app.gameOver = True
 
 def endDay(app):
-    print('new day')
+    #TODO: add transition sequence
+    app.dayOver = True
 
 def main():
     runApp()
