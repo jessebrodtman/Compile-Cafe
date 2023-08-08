@@ -1,7 +1,7 @@
 from cmu_graphics import *
 
 class Ticket:
-    ticketId = 1
+    ticketId = 0
     
     def __init__(self, codeItems, compileLevel, nameItems):
         self.codeItems = codeItems
@@ -23,7 +23,7 @@ class Ticket:
         return self.id == other.id
     
     def __repr__(self):
-        s = f"""Ticket #{self.id}:"""
+        s = f"""Ticket #{self.id+1}:"""
         for item in self.codeItems:
             s += '\n'+item
         

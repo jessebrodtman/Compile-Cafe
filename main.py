@@ -15,6 +15,7 @@ import time
 
 #TODO: make customers appear gradually
 #TODO: give order to ticket and score
+#TODO: make day 1 explanation game
 def checkSceneSwitch(app, mouseX, mouseY):
     #check if in right vertical space
     if app.height-75<=mouseY<=app.height-25:
@@ -36,7 +37,7 @@ def onAppStart(app):
     
     #TODO: make more names, sizes, and styles
     app.fileNames = ['Henry', 'Billy', 'Joe']
-    app.fileSizes = ['big file', 'medium file', 'small file']
+    app.fileSizes = ['Small','Medium','Large']
     app.fileStyles = ['Light Mode', 'Dark Mode', 'Hotdog']
     
     #TODO: figure out scoring system and display
@@ -58,7 +59,7 @@ def startNewDay(app, dayNumber):
     app.sceneName = getSceneName(app.sceneNumber)
     
     app.nameList = ['Ray', 'Liv', 'Avi', 'Amalia', 'Anna', 'Emily', 'Gleb', 'Hanson', 'Maerah', 'Peter', 'Rubie', 'Rong', 'Samuel', 'Sheng', 'Sonya', 'Teadora', 'Theo']
-    app.activeOrders = {1: [], 2: [], 3: [], 4: []}
+    app.activeOrders = {1: [], 2: [], 3: [], 4: None}
     
     if dayNumber == 1:
         app.availableCodeItems = ['If', 'Elif', 'Else', 'List']
@@ -67,11 +68,11 @@ def startNewDay(app, dayNumber):
     elif dayNumber == 2:
         app.availableCodeItems = ['If', 'Elif', 'Else', 'List', 'For Loop','While Loop']
         app.availableCompileLevels = [2, 3, 4]
-        app.availableNameItems = ['Name', 'File Size']
+        app.availableNameItems = ['Name', 'Size']
     elif dayNumber >= 3:
         app.availableCodeItems = ['If', 'Elif', 'Else', 'List', 'For Loop','While Loop', 'Set', 'Dict']
         app.availableCompileLevels = [1, 2, 3, 4, 5]
-        app.availableNameItems = ['Name', 'File Size', 'Style']
+        app.availableNameItems = ['Name', 'Size', 'Style']
         
     app.customerList = createCustomers(app)
     app.activeTicket = None
@@ -110,9 +111,9 @@ def makeRandomTicket(app):
         if option == 'Name':
             index = randrange(0, len(app.fileNames))
             nameDict['Name'] = app.fileNames[index]
-        elif option == 'File Size':
+        elif option == 'Size':
             index = randrange(0, len(app.fileSizes))
-            nameDict['File Size'] = app.fileSizes[index]
+            nameDict['Size'] = app.fileSizes[index]
         elif option == 'Style':
             index = randrange(0, len(app.fileStyles))
             nameDict['Style'] = app.fileStyles[index]
@@ -154,7 +155,7 @@ def redrawAll(app):
     for i in range(len(app.customerList)):
         customer = app.customerList[i]
         ticket = customer.ticket
-        if i == app.activeTicket:
+        if customer.getTicketNum() == app.activeTicket:
             ticket.drawTicket(480, 40, 90, 130)
         else:
             ticket.drawTicket(25+80*i, 25, 60, 90)
@@ -205,15 +206,23 @@ def onMousePress(app, mouseX, mouseY):
                 app.activeOrders[2][0].updateCompileLevel()
                 app.activeOrders[3].append(app.activeOrders[2].pop(0))
     elif app.sceneNumber == 3:
-        #TODO: make buttons work for style
         if len(app.activeOrders[3])>0:
             #pressed trash order button
             if(25<=mouseX<=85 and 210<=mouseY<=270):
                     app.activeOrders[3].pop(0)
             #pressed move order button
             elif(25<=mouseX<=85 and 290<=mouseY<=350):
-                pass
                 #TODO: make function to evaluate order
+                for i in range(len(app.customerList)):
+                    customer = app.customerList[i]
+                    if customer.getTicketNum() == app.activeTicket:
+                        customer.evaluateTicket(app.activeOrders[3][0])
+                        app.activeOrders[4] = (customer, app.activeOrders[3].pop(0))
+                        app.sceneNumber = 4
+            elif(420<=mouseX<=560):
+                for i in range(0,len(app.availableNameItems)):
+                    if (220+70*i<=mouseY<=270+70*i):
+                        app.activeOrders[3][0].updateNameItems(i)
     elif app.sceneNumber == 4:
         pass
 

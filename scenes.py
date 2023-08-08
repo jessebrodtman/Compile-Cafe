@@ -35,8 +35,8 @@ def drawScene(app, sceneNumber):
         drawEval(app)
     
     #? draw label until scenes are done
-    drawLabel(f'Active Scene: {app.sceneName}', app.width/2, app.height-150, bold=True, border='white', borderWidth=1, size=25)
-    drawLabel(f'Current Day: {app.dayNumber}', app.width/2, app.height-125, bold=True, border='white', borderWidth=1, size=25)
+    # drawLabel(f'Active Scene: {app.sceneName}', app.width/2, app.height-150, bold=True, border='white', borderWidth=1, size=25)
+    # drawLabel(f'Current Day: {app.dayNumber}', app.width/2, app.height-125, bold=True, border='white', borderWidth=1, size=25)
     
 def drawLobby(app):
     drawRect(0,0,app.width,app.height,fill='lightGray')
@@ -107,15 +107,14 @@ def drawNaming(app):
     drawRect(25,290,60,60,fill='white')
     drawLabel('Press to move', 55, 305, size=9)
     drawLabel('current order!', 55, 320, size=9)
-    #rename
-    drawRect(420,220,140,50,fill='white')
-    drawLabel('Rename Order',490,245,size=17)
-    #change size
-    drawRect(420,290,140,50,fill='white')
-    drawLabel('Change File Size',490,315,size=17)
-    #change style
-    drawRect(420,360,140,50,fill='white')
-    drawLabel('Rename Style',490,385,size=17)
+    
+    buttonText = ['Rename Order', 'Change File Size', 'Change Style']
+    for i in range(len(app.availableNameItems)):
+        drawRect(420, 220+70*i,140,50,fill='white')
+        drawLabel(buttonText[i],490,245+70*i,size=17)
+    for i in range(len(app.availableNameItems),3):
+        drawRect(420, 220+70*i,140,50,fill='gray')
+        drawLabel('Coming Soon!',490,245+70*i,size=17)
     
     #display active order
     if app.activeOrders[3] != []:
@@ -124,6 +123,16 @@ def drawNaming(app):
 
 def drawEval(app):
     drawRect(0,0,app.width,app.height,fill='pink')
+    if app.activeOrders[4] != None:
+        customer, order = app.activeOrders[4]
+        order.drawOrder()
+        
+        scoreNames = ['Time Score:', 'Coding Score:', 'Compiling Score:', 'Naming Score:', 'Total Score:']
+        for i in range(5):
+            currScore = customer.scores[i]
+            drawRect(62.5+i*100,app.height-165,75,50,fill='dodgerBlue')
+            drawLabel(scoreNames[i],100+i*100,app.height-149,bold=True, size=9)
+            drawLabel(currScore,100+i*100,app.height-133,bold=True)
 
 def drawSceneButtons(app):
     #TODO: make buttons pretty
