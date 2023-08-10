@@ -1,10 +1,7 @@
 from cmu_graphics import *
 from orders import *
 
-#! draw scenes 
-#TODO: make backgrounds for each scene
-#TODO: make buttons pretty for each scene
-
+#draw all the scenes 
 def getSceneName(sceneNumber):
     if sceneNumber == -2:
         return 'instructions'
@@ -43,10 +40,6 @@ def drawScene(app, sceneNumber):
     elif sceneNumber == 4:
         #draw evaluating
         drawEval(app)
-    
-    #? draw label until scenes are done
-    # drawLabel(f'Active Scene: {app.sceneName}', app.width/2, app.height-150, bold=True, border='white', borderWidth=1, size=25)
-    # drawLabel(f'Current Day: {app.dayNumber}', app.width/2, app.height-125, bold=True, border='white', borderWidth=1, size=25)
 
 def drawGuide(app, num):
     #add all the guided messages
@@ -220,7 +213,6 @@ def drawNaming(app):
         activeOrder.drawOrder()
 
 def drawEval(app):
-    #TODO: draw customer and picture
     drawRect(0,0,app.width,app.height,fill='pink')
     if app.activeOrders[4] != None:
         customer, order = app.activeOrders[4]
@@ -228,7 +220,8 @@ def drawEval(app):
         customer.drawPicture(400,225,150)
         drawLabel(f'{customer.name} has been served!',450,410,size=20,bold=True)
         
-        scoreNames = ['Time Score:', 'Coding Score:', 'Compiling Score:', 'Naming Score:', 'Total Score:']
+        scoreNames = ['Time Score:', 'Coding Score:', 'Compiling Score:', 
+                      'Naming Score:', 'Total Score:']
         for i in range(5):
             currScore = customer.scores[i]
             drawRect(62.5+i*100,app.height-165,75,50,fill='dodgerBlue')
@@ -236,7 +229,6 @@ def drawEval(app):
             drawLabel(currScore,100+i*100,app.height-133,bold=True)
 
 def drawSceneButtons(app):
-    #TODO: make buttons pretty
     drawRect(0,app.height-100,app.width,100,fill='lightSlateGray')
     for i in range(5):
         drawRect(62.5+i*100,app.height-75,75,50,fill='dodgerBlue')

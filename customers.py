@@ -36,7 +36,7 @@ class Customer:
         10 point deduction for wrong order
         20 point deduction for wrong compile
         20 point deduction for wrong name item
-        <60 means game over
+        <70 means game over
         '''
         self.served = True
         
@@ -51,7 +51,8 @@ class Customer:
         extraCodeItems = differenceInItems(order.codeItems, ticket.codeItems)
         missingCodeItems = differenceInItems(ticket.codeItems, order.codeItems)
         numCodeItemsWrong = wrongPlace(ticket.codeItems, order.codeItems)
-        codingScore = 100-15*len(extraCodeItems)-15*len(missingCodeItems)-10*numCodeItemsWrong
+        codingScore = (100-15*len(extraCodeItems)-15*len(missingCodeItems)
+        -10*numCodeItemsWrong)
                 
         compileDiff = abs(order.compileLevel-ticket.compileLevel)
         compilingScore = 100-20*compileDiff
@@ -60,14 +61,14 @@ class Customer:
         nameItems = ['Name','Style','Size']
         for i in range(3):
             currItem = nameItems[i]
-            if order.nameItems.get(currItem,None) != ticket.nameItems.get(currItem,None):
+            if (order.nameItems.get(currItem,None) != 
+                ticket.nameItems.get(currItem,None)):
                 numNameItemsWrong += 1
         namingScore = 100-20*numNameItemsWrong
         
         overallScore = (lobbyScore+codingScore+compilingScore+namingScore)//4
-        self.scores = [lobbyScore, codingScore, compilingScore, namingScore, overallScore]
-        
-        app.score += overallScore
+        self.scores = [lobbyScore, codingScore, compilingScore,
+                       namingScore, overallScore]
         
         if overallScore<70:
             return True

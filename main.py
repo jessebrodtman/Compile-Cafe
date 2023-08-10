@@ -9,15 +9,6 @@ import time
 
 #* staff pictures from https://www.cs.cmu.edu/~112/staff.html
 
-# regular
-#TODO: orange
-#? blue
-#! red
-#* green
-
-#TODO: make customers appear gradually
-#TODO: give order to ticket and score
-#TODO: add instructions for day 0
 def checkSceneSwitch(app, mouseX, mouseY):
     #check if in right vertical space
     if app.height-75<=mouseY<=app.height-25:
@@ -29,7 +20,6 @@ def checkSceneSwitch(app, mouseX, mouseY):
                 return
 
 def onAppStart(app):
-    #TODO: figure out adaptive width and height
     app.width = 600
     app.height = 600
     app.dayNumber = 0
@@ -44,8 +34,6 @@ def onAppStart(app):
     app.fileSizes = ['Small','Medium','Large']
     app.fileStyles = ['Light Mode', 'Dark Mode', 'Hotdog']
     
-    #TODO: display scoring
-    app.score = 0
     app.sceneNumber = -1
 
 def runTutorial(app):
@@ -82,7 +70,9 @@ def startNewDay(app, dayNumber):
     app.sceneNumber = 0
     app.sceneName = getSceneName(app.sceneNumber)
     
-    app.nameList = ['Ray', 'Liv', 'Avi', 'Amalia', 'Anna', 'Emily', 'Gleb', 'Hanson', 'Maerah', 'Peter', 'Rubie', 'Rong', 'Samuel', 'Sheng', 'Sonya', 'Teadora', 'Theo']
+    app.nameList = ['Ray', 'Liv', 'Avi', 'Amalia', 'Anna', 'Emily', 'Gleb',
+                    'Hanson', 'Maerah', 'Peter', 'Rubie', 'Rong', 'Samuel', 
+                    'Sheng', 'Sonya', 'Teadora', 'Theo']
     app.activeOrders = {1: [], 2: [], 3: [], 4: None}
     
     if dayNumber == 1:
@@ -90,11 +80,13 @@ def startNewDay(app, dayNumber):
         app.availableCompileLevels = [2, 3]
         app.availableNameItems = ['Name']
     elif dayNumber == 2:
-        app.availableCodeItems = ['If', 'Elif', 'Else', 'List', 'For Loop','While Loop']
+        app.availableCodeItems = ['If', 'Elif', 'Else', 'List', 'For Loop',
+                                  'While Loop']
         app.availableCompileLevels = [2, 3, 4]
         app.availableNameItems = ['Name', 'Size']
     elif dayNumber >= 3:
-        app.availableCodeItems = ['If', 'Elif', 'Else', 'List', 'For Loop','While Loop', 'Set', 'Dict']
+        app.availableCodeItems = ['If', 'Elif', 'Else', 'List', 'For Loop',
+                                  'While Loop', 'Set', 'Dict']
         app.availableCompileLevels = [1, 2, 3, 4, 5]
         app.availableNameItems = ['Name', 'Size', 'Style']
         
@@ -113,10 +105,10 @@ def makeRandomTicket(app):
         numberNameItems = 1
     elif app.dayNumber<5:
         numberCodeItems = 3
-        numberNameItems = 2
+        numberNameItems = 1
     else:
-        numberCodeItems = 4
-        numberNameItems = 3
+        numberCodeItems = 3
+        numberNameItems = 2
 
     codeList = copy.copy(app.availableCodeItems)
     
@@ -142,7 +134,8 @@ def makeRandomTicket(app):
             index = randrange(0, len(app.fileStyles))
             nameDict['Style'] = app.fileStyles[index]
     
-    compileLevel = app.availableCompileLevels[randrange(0,len(app.availableCompileLevels))]
+    nextLength = len(app.availableCompileLevels)
+    compileLevel = app.availableCompileLevels[randrange(0,nextLength)]
         
     ticket = Ticket(codeList, compileLevel, nameDict)
     return ticket
@@ -179,7 +172,7 @@ def redrawAll(app):
             if customer.getTicketNum() == app.activeTicket:
                 ticket.drawTicket(480, 30, 90, 150)
             else:
-                ticket.drawTicket(25+80*i, 25, 60, 100)
+                ticket.drawTicket(25+80*i, 25, 60, 90)
         
         #draw guide through tutorial
         if app.dayNumber == 0:
@@ -201,8 +194,6 @@ def redrawAll(app):
             drawLabel(f'You Passed The Tutorial!',
                       300,300,size=20,bold=True)
         drawLabel("Press 'N' To Continue!",300,330,size=20,bold=True)
-        
-    #TODO: draw score
     
 def onKeyPress(app, key):
     if key.isnumeric():
@@ -306,11 +297,13 @@ def onMousePress(app, mouseX, mouseY):
                     for i in range(len(app.customerList)):
                         customer = app.customerList[i]
                         if customer.getTicketNum() == app.activeTicket:
-                            end = customer.evaluateTicket(app.activeOrders[3][0])
+                            tempName = app.activeOrders[3][0]
+                            end = customer.evaluateTicket(tempName)
                             if end:
                                 endGame(app)
                             
-                            app.activeOrders[4] = (customer, app.activeOrders[3].pop(0))
+                            tempName = app.activeOrders[3].pop(0)
+                            app.activeOrders[4] = (customer, tempName)
                             app.sceneNumber = 4
                             app.customerList.pop(i)
                             if len(app.customerList)==0:

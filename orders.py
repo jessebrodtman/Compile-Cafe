@@ -13,22 +13,20 @@ class Order:
         self.startTime = time.time()
         
     def updateCompileLevel(self):
-        #TODO: draw progress bar?
         timeElapsed = time.time()-self.startTime
         self.compileLevel = int(timeElapsed//5)
     
     def drawOrder(self):
-        #TODO: make pretty
         x = app.width//2 - 120
         y = app.height//2 - 140
         width = 190
-        height = 230
+        height = 240
         drawRect(x, y, width, height, fill='white')
         
         lines = str(self).splitlines()
         for i in range(len(lines)):
             line = lines[i]
-            drawLabel(line, x+width/2, y+width/5+i*width//6, size=width//10)
+            drawLabel(line, x+width/2, y-5+width/5+i*width//6, size=width//10)
         
     def addCodeItem(self, item):
         self.codeItems.append(item)
