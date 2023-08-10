@@ -6,6 +6,10 @@ from orders import *
 #TODO: make buttons pretty for each scene
 
 def getSceneName(sceneNumber):
+    if sceneNumber == -2:
+        return 'instructions'
+    if sceneNumber == -1:
+        return 'title'
     if sceneNumber == 0:
         return 'lobby'
     elif sceneNumber == 1:
@@ -18,7 +22,13 @@ def getSceneName(sceneNumber):
         return 'evaluating'
 
 def drawScene(app, sceneNumber):
-    if sceneNumber == 0:
+    if sceneNumber == -2:
+        #draw instructions
+        drawInstructions(app)
+    elif sceneNumber == -1:
+        #draw title
+        drawTitle(app)
+    elif sceneNumber == 0:
         #draw lobby
         drawLobby(app)
     elif sceneNumber == 1:
@@ -37,6 +47,89 @@ def drawScene(app, sceneNumber):
     #? draw label until scenes are done
     # drawLabel(f'Active Scene: {app.sceneName}', app.width/2, app.height-150, bold=True, border='white', borderWidth=1, size=25)
     # drawLabel(f'Current Day: {app.dayNumber}', app.width/2, app.height-125, bold=True, border='white', borderWidth=1, size=25)
+
+def drawGuide(app, num):
+    #add all the guided messages
+    messages = ['''Welcome to the Coderia!\nPress anywhere to start''',
+                ('At any time, you can use the left/right arrows\nto go to the' 
+                +' next or previous instruction\nTry it now and go to the '
+                +'next instruction!'),
+                ('This is the lobby!\nHere you will see all your customers for'
+                +' the day!\nYou can also see your tickets to the right.\n'
+                +'You can make a ticket big by pressing\n the number key. '
+                +"Try it!\nPress 1 to see Ray's ticket"),
+                ('Now that you can see all the requirements,\ngo to the coding'
+                ' screen by\npressing the button below'),
+                ('Welcome to the coding screen!\nHere you will add your first'
+                 +' ingredients!\nStart by making a new order\nwith the button'
+                 +' on the left'),
+                ('Ray wants an if statement!\nClick the if button to add it'
+                 +' to the order'),
+                ('She also wants an elif statement!\n'
+                 +'Click the elif button to add it!'),
+                ('Now that all the code items are added,\nMove to the compile'
+                 +' menu by pressing\nthe move current order button'),
+                ('Welcome to the compile menu!\nHere you will prepare your '
+                 +'code\nThe compile level will go up automatically.'
+                 +'\n(go to the next instruction)'),
+                ('Once the desired level has been reached,\nmove the order'
+                 ' to the naming stage!\nBe careful not to move it too'
+                 +' early or too late!'),
+                ('Welcome to the naming stage!\nHere you will add the final'
+                 +' touches!\nClick the rename order button to\ncycle through'
+                 +' names.'),
+                ('When everything looks right, move the order'
+                 +'\nto get scored!'),
+                ('Welcome to the scoring menu!\nHere you can see how you did on'
+                 +' the last order.\nWhen you are ready, go back to the lobby'),
+                ("Welcome back!\nPress 2 to see James' order."),
+                ('When you are ready, make his order'
+                 +'\nto complete the tutorial!'),
+                ('Once this order is served, you will\nstart out at day 1! As '
+                 +'you play,\nnew ingredients will unlock,\nmore customers'
+                 +' will come,\nand orders will get more complicated!')]
+    num = max(0,num)
+    num = min(num, len(messages)-1)
+    drawRect(180,20,270,130,fill='white')
+    
+    numLines = len(messages[num].splitlines())
+    distancePer = 20
+    for i in range(numLines):
+        line = messages[num].splitlines()[i]
+        drawLabel(line, 315, 138/2-(numLines//2-i-1)*distancePer)
+
+def drawInstructions(app):
+    drawRect(0,0,app.width,app.height,fill='black')
+    
+    drawLabel("Papa's",app.width/2,90,fill='white',size=50, bold=True)  
+    drawLabel("Coderia",app.width/2,150,fill='white',size=50, bold=True)  
+    drawRect(75,400,150,100,fill='lightgray')
+    drawLabel('Title Page',150,450,size=20)
+    drawRect(375,400,150,100,fill='lightgray')
+    drawLabel('Start Game',450,450,size=20)
+    
+    drawLabel('Your mission is to serve your customers!',
+              300,210,size=16,fill='white')
+    drawLabel('You must take customers orders and',
+              300,230,size=16,fill='white')
+    drawLabel('create their desired program.',300,250,size=16,fill='white')
+    drawLabel('Serve every customer to pass the day!',
+              300,270,size=16,fill='white')
+    drawLabel('But be careful, if you mess up an',300,290,size=16,fill='white')
+    drawLabel("order, it's game OVER :(",300,310,size=16,fill='white')
+
+def drawTitle(app):
+    drawRect(0,0,app.width,app.height,fill='black')
+    drawLabel("Papa's",app.width/2,90,fill='white',size=50, bold=True)  
+    drawLabel("Coderia",app.width/2,150,fill='white',size=50, bold=True)  
+    drawRect(75,400,150,100,fill='lightgray')
+    drawLabel('Instructions',150,450,size=20)
+    drawRect(375,400,150,100,fill='lightgray')
+    drawLabel('Start Game',450,450,size=20)
+    drawLabel('Welcome!',app.width/2,250,fill='white',size=35,bold=True)
+    drawLabel('Press the Buttons',app.width/2,285,fill='white',
+              size=35,bold=True)
+    drawLabel('To Get Started!',app.width/2,320,fill='white',size=35,bold=True)
     
 def drawLobby(app):
     drawRect(0,0,app.width,app.height,fill='lightGray')
@@ -133,7 +226,7 @@ def drawEval(app):
         customer, order = app.activeOrders[4]
         order.drawOrder()
         customer.drawPicture(400,225,150)
-        drawLabel(f'{customer.name} has been served!',450,400,size=20,bold=True)
+        drawLabel(f'{customer.name} has been served!',450,410,size=20,bold=True)
         
         scoreNames = ['Time Score:', 'Coding Score:', 'Compiling Score:', 'Naming Score:', 'Total Score:']
         for i in range(5):

@@ -11,7 +11,7 @@ class Customer:
         self.served = False
     
     def drawPicture(self, x, y, size):
-        picture = Image.open(f'C:\\Users\\jesse\\Desktop\\15-112\\Images\\{self.name}.jpeg')
+        picture = Image.open(f'Images\{self.name}.jpeg')
         picture = CMUImage(picture)
         drawImage(picture,x,y,width=size,height=size)
     
@@ -46,7 +46,7 @@ class Customer:
         numItems = len(ticket.codeItems)+len(ticket.nameItems)
         estimatedTime = numItems*5+ticket.compileLevel*5
         timeOver = max(0, timeTaken-estimatedTime)
-        lobbyScore = 100-5*timeOver
+        lobbyScore = max(0,100-5*rounded(timeOver))
         
         extraCodeItems = differenceInItems(order.codeItems, ticket.codeItems)
         missingCodeItems = differenceInItems(ticket.codeItems, order.codeItems)

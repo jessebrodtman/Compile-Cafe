@@ -7,6 +7,8 @@ from orders import *
 from scenes import *
 import time
 
+#* staff pictures from https://www.cs.cmu.edu/~112/staff.html
+
 # regular
 #TODO: orange
 #? blue
@@ -36,18 +38,18 @@ def onAppStart(app):
     app.availableNameItems = []
     app.gameOver = False
     app.dayOver = False
+    app.guideNumber = 0
     
-    #TODO: make more names, sizes, and styles
     app.fileNames = ['Henry', 'Billy', 'Joe']
     app.fileSizes = ['Small','Medium','Large']
     app.fileStyles = ['Light Mode', 'Dark Mode', 'Hotdog']
     
-    #TODO: figure out scoring system and display
+    #TODO: display scoring
     app.score = 0
-    
-    runTutorial(app)
+    app.sceneNumber = -1
 
 def runTutorial(app):
+    app.guideNumber = 0
     app.sceneNumber = 0
     app.nameList = ['Ray', 'Liv', 'Avi', 'Amalia', 'Anna', 'James', 'Emily', 'Gleb', 'Hanson', 'Jieun', 'Maerah', 'Peter', 'Rubie', 'Riley', 'Rong', 'Samuel', 'Sheng', 'Mia', 'Sonya', 'Teadora', 'Theo']
     app.activeOrders = {1: [], 2: [], 3: [], 4: None}
@@ -70,8 +72,9 @@ def onStep(app):
     if app.height != 600:
         app.height = 600
     
-    for order in app.activeOrders[2]:
-        order.updateCompileLevel()
+    if app.sceneNumber>=0:
+        for order in app.activeOrders[2]:
+            order.updateCompileLevel()
     
 def startNewDay(app, dayNumber):
     app.dayNumber = dayNumber
@@ -161,21 +164,26 @@ def createCustomers(app):
 def redrawAll(app):
     #draw background and title
     drawScene(app, app.sceneNumber)
+    
+    if app.sceneNumber>=0:
+        #draw buttons
+        drawSceneButtons(app)
+    
+        #draw active ticket section
+        drawRect(app.width-140,20,130,170, fill='black')
         
-    #draw buttons
-    drawSceneButtons(app)
-    
-    #draw active ticket section
-    drawRect(app.width-140,20,130,170, fill='black')
-    
-    #draw tickets
-    for i in range(len(app.customerList)):
-        customer = app.customerList[i]
-        ticket = customer.ticket
-        if customer.getTicketNum() == app.activeTicket:
-            ticket.drawTicket(480, 40, 90, 130)
-        else:
-            ticket.drawTicket(25+80*i, 25, 60, 90)
+        #draw tickets
+        for i in range(len(app.customerList)):
+            customer = app.customerList[i]
+            ticket = customer.ticket
+            if customer.getTicketNum() == app.activeTicket:
+                ticket.drawTicket(480, 30, 90, 150)
+            else:
+                ticket.drawTicket(25+80*i, 25, 60, 100)
+        
+        #draw guide through tutorial
+        if app.dayNumber == 0:
+            drawGuide(app, app.guideNumber)
     
     if app.gameOver:
         drawRect(150,200,300,200,fill='white',border='black')
@@ -186,7 +194,12 @@ def redrawAll(app):
     if app.dayOver:
         drawRect(150,200,300,200,fill='white',border='black')
         drawLabel('Day Over!',300,270,size=20,bold=True)
-        drawLabel(f'You Passed Day #{app.dayNumber}!',300,300,size=20,bold=True)
+        if app.dayNumber>0:
+            drawLabel(f'You Passed Day #{app.dayNumber}!',
+                      300,300,size=20,bold=True)
+        else:
+            drawLabel(f'You Passed The Tutorial!',
+                      300,300,size=20,bold=True)
         drawLabel("Press 'N' To Continue!",300,330,size=20,bold=True)
         
     #TODO: draw score
@@ -202,14 +215,50 @@ def onKeyPress(app, key):
     if app.dayOver and key == 'n':
         app.dayOver = False
         startNewDay(app, app.dayNumber+1)
+    
+    #easily switch days
+    if key == 'l':
+        startNewDay(app, app.dayNumber+1)
+    elif key == 'k':
+        if app.dayNumber<=1:
+            runTutorial(app)
+        else:
+            startNewDay(app, app.dayNumber-1)
+
+    #move around guide
+    if app.dayNumber == 0:
+        if key == 'left':
+            app.guideNumber -= 1
+        elif key == 'right':
+            app.guideNumber += 1
+        else:
+            app.guideNumber += 1
 
 def onMousePress(app, mouseX, mouseY):
     #check if switching scenes
     checkSceneSwitch(app, mouseX, mouseY)
     
+    #check if guide should change
+    if app.dayNumber == 0:
+        app.guideNumber += 1
+    
     #check buttons based on active scene
     if not app.gameOver:
-        if app.sceneNumber == 0:
+        if app.sceneNumber == -2:
+            #check go home
+            if(75<=mouseX<=225 and 400<=mouseY<=500):
+                app.sceneNumber = -1
+            #check to start game
+            elif(375<=mouseX<=525 and 400<=mouseY<=500):
+                runTutorial(app)
+        elif app.sceneNumber == -1:
+            #check if instructions
+            if(75<=mouseX<=225 and 400<=mouseY<=500):
+                app.sceneNumber = -2
+            #check to start game
+            elif(375<=mouseX<=525 and 400<=mouseY<=500):
+                runTutorial(app)
+        elif app.sceneNumber == 0:
             pass
         elif app.sceneNumber == 1:
             #pressed new order button
@@ -223,6 +272,7 @@ def onMousePress(app, mouseX, mouseY):
                 elif(25<=mouseX<=85 and 290<=mouseY<=350):
                     app.activeOrders[1][0].startTimer()
                     app.activeOrders[2].append(app.activeOrders[1].pop(0))
+                    app.sceneNumber = 2
                 #check first column of buttons
                 elif(420<=mouseX<=480):
                     for i in range(4):
@@ -245,6 +295,7 @@ def onMousePress(app, mouseX, mouseY):
                 elif(25<=mouseX<=85 and 290<=mouseY<=350):
                     app.activeOrders[2][0].updateCompileLevel()
                     app.activeOrders[3].append(app.activeOrders[2].pop(0))
+                    app.sceneNumber = 3
         elif app.sceneNumber == 3:
             if len(app.activeOrders[3])>0:
                 #pressed trash order button
@@ -252,7 +303,6 @@ def onMousePress(app, mouseX, mouseY):
                         app.activeOrders[3].pop(0)
                 #pressed move order button
                 elif(25<=mouseX<=85 and 290<=mouseY<=350):
-                    #TODO: make function to evaluate order
                     for i in range(len(app.customerList)):
                         customer = app.customerList[i]
                         if customer.getTicketNum() == app.activeTicket:
@@ -275,7 +325,6 @@ def endGame(app):
     app.gameOver = True
 
 def endDay(app):
-    #TODO: add transition sequence
     app.dayOver = True
 
 def main():

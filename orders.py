@@ -20,7 +20,7 @@ class Order:
     def drawOrder(self):
         #TODO: make pretty
         x = app.width//2 - 120
-        y = app.height//2 - 150
+        y = app.height//2 - 140
         width = 190
         height = 230
         drawRect(x, y, width, height, fill='white')
